@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <title>Nautilus Logistics AI | Cyber Architect 2026</title>
+    <meta name="description" content="Predict freight rates, optimize charter timing, and maximize voyage savings with AI" />
+
+    <!-- Instant Normal-Mode Cache Purge & Service Worker Reset (Works across Chrome, Firefox, Brave, Edge) -->
+    <script>
+      (function() {
+        try {
+          if ('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              for (var i = 0; i < regs.length; i++) {
+                regs[i].unregister();
+              }
+            }).catch(function() {});
+          }
+          if ('caches' in window && caches.keys) {
+            caches.keys().then(function(names) {
+              for (var i = 0; i < names.length; i++) {
+                caches.delete(names[i]);
+              }
+            }).catch(function() {});
+          }
+          // Detect if Chrome delivered the page from a zombie ServiceWorker cache and force a fresh reload
+          if (window.performance && window.performance.getEntriesByType) {
+            var nav = window.performance.getEntriesByType('navigation');
+            if (nav && nav.length > 0 && (nav[0].deliveryType === 'service-worker' || nav[0].transferSize === 0)) {
+              if (!sessionStorage.getItem('__sw_purged__')) {
+                sessionStorage.setItem('__sw_purged__', '1');
+                window.location.reload();
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#030712" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Nautilus Logistics AI" />
+
+    <!-- App Icons -->
+    <link rel="icon" type="image/png" href="/maritime-logistics-logo.png?v=1" />
+    <link rel="apple-touch-icon" href="/icon-512.png" />
+
+    <!-- Professional Typography: Outfit (Headings), Plus Jakarta Sans (UI), JetBrains Mono (Data/Metrics) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+    <!-- High priority preload for instant background and asset painting -->
+    <link rel="preload" as="image" href="/maritime-logistics-logo.png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/team-logo.png" />
+  </head>
+  <body class="bg-[#030712]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

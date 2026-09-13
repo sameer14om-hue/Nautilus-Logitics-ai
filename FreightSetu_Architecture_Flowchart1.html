@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreightSetu Pro — Interactive Architecture Flowchart</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#030712;--card:rgba(10,16,34,.88);--card-h:rgba(16,24,52,.94);
+  --bdr:rgba(56,189,248,.1);--bdr-a:rgba(0,212,170,.35);
+  --cyan:#00d4aa;--blue:#38bdf8;--purple:#a78bfa;--amber:#fbbf24;
+  --rose:#fb7185;--emerald:#34d399;--orange:#fb923c;
+  --t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--t1);overflow-x:auto}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 800px 600px at 20% 25%,rgba(0,212,170,.035),transparent),radial-gradient(ellipse 600px 800px at 80% 75%,rgba(56,189,248,.025),transparent);pointer-events:none;z-index:0}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;backdrop-filter:blur(42px) saturate(1.6);background:rgba(3,7,18,.85);border-bottom:1px solid var(--bdr);padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.hdr-ico{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px rgba(0,212,170,.15)}
+.hdr-t{font-size:19px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr-s{font-size:11px;color:var(--t3);letter-spacing:1.2px;text-transform:uppercase}
+.hdr-b{font-size:10px;padding:4px 12px;border-radius:16px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.2);color:var(--cyan);font-weight:600}
+
+/* CANVAS */
+.canvas{position:relative;width:1520px;min-height:4800px;margin:0 auto;padding:0}
+
+/* SVG */
+.svg-l{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.svg-l line,.svg-l path{stroke:rgba(0,212,170,.25);stroke-width:1.5;fill:none;stroke-dasharray:6 4;animation:fl 1.8s linear infinite}
+@keyframes fl{to{stroke-dashoffset:-20}}
+.svg-l polygon{fill:var(--cyan);opacity:.7}
+
+/* LAYER BARS */
+.lb{position:absolute;z-index:2;left:40px;right:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,170,.12),transparent)}
+.lt{position:absolute;z-index:3;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 14px;border-radius:0 0 8px 8px;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.15);border-top:none;color:var(--cyan)}
+
+/* NODE */
+.nd{position:absolute;z-index:4;backdrop-filter:blur(22px) saturate(1.4);background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .3s var(--ease);overflow:visible}
+.nd::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);border-radius:14px 14px 0 0}
+.nd:hover{background:var(--card-h);border-color:rgba(0,212,170,.22);transform:translateY(-2px);box-shadow:0 0 24px rgba(0,212,170,.08),0 8px 28px rgba(0,0,0,.3)}
+.nd.sel{border-color:var(--bdr-a);box-shadow:0 0 40px rgba(0,212,170,.12);z-index:10}
+
+.nh{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.ni{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ic-c{background:rgba(0,212,170,.12);border:1px solid rgba(0,212,170,.18)}
+.ic-b{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.18)}
+.ic-p{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.18)}
+.ic-a{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.18)}
+.ic-r{background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.18)}
+.ic-e{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.18)}
+.ic-o{background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.18)}
+
+.nn{font-size:12.5px;font-weight:700;letter-spacing:-.2px;line-height:1.2}
+.nf{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3)}
+.ns{font-size:10.5px;color:var(--t2);line-height:1.45}
+.nt{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.tg{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.tg-py{background:rgba(251,191,36,.1);color:#fbbf24}
+.tg-ai{background:rgba(167,139,250,.1);color:#a78bfa}
+.tg-bc{background:rgba(251,146,60,.1);color:#fb923c}
+.tg-ui{background:rgba(56,189,248,.1);color:#60a5fa}
+.tg-rl{background:rgba(0,212,170,.1);color:#34d399}
+.tg-dk{background:rgba(251,113,133,.1);color:#fb7185}
+.nc{font-size:9px;color:var(--t3);margin-top:5px;transition:color .3s}
+.nd:hover .nc{color:var(--cyan)}
+.nbg{position:absolute;top:-10px;right:-6px;font-size:7.5px;font-weight:800;padding:2px 7px;border-radius:8px;background:rgba(0,212,170,.15);border:1px solid rgba(0,212,170,.3);color:var(--cyan);letter-spacing:.3px}
+
+/* WIDE BOX */
+.wb{position:absolute;z-index:4;backdrop-filter:blur(22px) saturate(1.4);background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:14px 20px;text-align:center;cursor:pointer;transition:all .3s var(--ease)}
+.wb:hover{background:var(--card-h);border-color:rgba(0,212,170,.22);transform:translateY(-2px);box-shadow:0 0 24px rgba(0,212,170,.08),0 8px 28px rgba(0,0,0,.3)}
+.wb.sel{border-color:var(--bdr-a);box-shadow:0 0 40px rgba(0,212,170,.12);z-index:10}
+
+/* TITLE BLOCK */
+.tb{position:absolute;z-index:3;left:60px;right:60px;text-align:center;padding:22px 30px;backdrop-filter:blur(28px) saturate(1.5);background:rgba(10,16,34,.88);border:1px solid var(--bdr);border-radius:16px}
+.tb h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb p{font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:1.2px;text-transform:uppercase}
+
+/* SECTION TITLE */
+.stitle{position:absolute;z-index:3;font-size:18px;font-weight:800;letter-spacing:-.3px;color:var(--t1)}
+.stitle .sub{font-size:11px;color:var(--t3);font-weight:400;margin-top:2px}
+
+/* PANEL */
+.po{position:fixed;inset:0;z-index:900;background:rgba(3,7,18,.6);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s}
+.po.sh{opacity:1;pointer-events:all}
+.pn{position:fixed;top:0;right:-530px;bottom:0;width:510px;max-width:93vw;z-index:950;background:rgba(8,14,30,.97);backdrop-filter:blur(32px) saturate(1.5);border-left:1px solid var(--bdr);transition:right .4s var(--ease);overflow-y:auto;box-shadow:-20px 0 60px rgba(0,0,0,.4)}
+.pn.sh{right:0}
+.pn::-webkit-scrollbar{width:4px}
+.pn::-webkit-scrollbar-thumb{background:rgba(0,212,170,.3);border-radius:2px}
+.ph{position:sticky;top:0;z-index:5;backdrop-filter:blur(24px);background:rgba(8,14,30,.92);padding:20px 24px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;justify-content:space-between}
+.phi{flex:1}
+.phb{font-size:9px;font-weight:800;padding:3px 10px;border-radius:6px;background:rgba(0,212,170,.12);border:1px solid rgba(0,212,170,.25);color:var(--cyan);margin-bottom:8px;display:inline-block}
+.pht{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.phf{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);margin-top:3px}
+.px{width:32px;height:32px;border-radius:8px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.2);color:var(--rose);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;margin-left:12px}
+.px:hover{background:rgba(251,113,133,.2);transform:scale(1.1)}
+.pb{padding:20px 24px 40px}
+.ps{margin-bottom:18px}
+.ps:last-child{margin-bottom:0}
+.pl{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.pt{font-size:13px;color:var(--t2);line-height:1.7}
+.pt code{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(56,189,248,.08);padding:1px 5px;border-radius:3px;color:var(--blue)}
+.pf{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(0,212,170,.05);border:1px solid rgba(0,212,170,.1);border-radius:8px;padding:12px 14px;color:var(--emerald);margin:8px 0;white-space:pre-wrap;line-height:1.6;overflow-x:auto}
+.pr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--t2);padding:5px 0}
+.pr .ar{color:var(--cyan);font-weight:800;font-size:14px}
+
+/* API TABLE */
+.api-tbl{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+.api-tbl th{text-align:left;padding:6px 8px;color:var(--cyan);font-weight:700;font-size:9px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid rgba(0,212,170,.15)}
+.api-tbl td{padding:6px 8px;border-bottom:1px solid rgba(56,189,248,.06);color:var(--t2)}
+.api-tbl td:first-child{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue)}
+
+/* FOOTER */
+.ft{position:absolute;z-index:3;left:60px;right:60px;text-align:center;font-size:10px;color:var(--t3);border-top:1px solid var(--bdr);padding-top:12px}
+.ft span{color:var(--cyan);font-weight:700}
+
+@media(max-width:800px){.hdr{flex-direction:column;gap:6px;padding:12px 16px}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-ico">🚢</div>
+    <div><div class="hdr-t">FreightSetu Pro</div><div class="hdr-s">Interactive Architecture Flowchart</div></div>
+  </div>
+  <div class="hdr-b">SIH26006 · Unified Maritime Intelligence</div>
+</div>
+
+<!-- PANEL -->
+<div class="po" id="ov" onclick="cp()"></div>
+<div class="pn" id="pn">
+  <div class="ph"><div class="phi"><div class="phb" id="pb"></div><div class="pht" id="ptt"></div><div class="phf" id="pff"></div></div><div class="px" onclick="cp()">✕</div></div>
+  <div class="pb" id="pby"></div>
+</div>
+
+<div class="canvas">
+
+<!-- SVG CONNECTORS -->
+<svg class="svg-l" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sources → Ingestion -->
+  <line x1="230" y1="295" x2="460" y2="420"/>
+  <line x1="690" y1="295" x2="690" y2="420"/>
+  <line x1="1150" y1="295" x2="920" y2="420"/>
+  <polygon points="455,417 465,417 460,427"/>
+  <polygon points="685,417 695,417 690,427"/>
+  <polygon points="915,417 925,417 920,427"/>
+  <!-- Ingestion → Data Store -->
+  <line x1="690" y1="530" x2="690" y2="620"/>
+  <polygon points="685,617 695,617 690,627"/>
+  <!-- Data Store → 3 Modules -->
+  <line x1="500" y1="740" x2="230" y2="850"/>
+  <line x1="690" y1="740" x2="690" y2="850"/>
+  <line x1="880" y1="740" x2="1150" y2="850"/>
+  <polygon points="225,847 235,847 230,857"/>
+  <polygon points="685,847 695,847 690,857"/>
+  <polygon points="1145,847 1155,847 1150,857"/>
+  <!-- 3 Modules → AI Controller -->
+  <line x1="230" y1="1070" x2="500" y2="1180"/>
+  <line x1="690" y1="1070" x2="690" y2="1180"/>
+  <line x1="1150" y1="1070" x2="880" y2="1180"/>
+  <polygon points="495,1177 505,1177 500,1187"/>
+  <polygon points="685,1177 695,1177 690,1187"/>
+  <polygon points="875,1177 885,1177 880,1187"/>
+  <!-- AI Controller → Outputs -->
+  <line x1="500" y1="1400" x2="340" y2="1510"/>
+  <line x1="880" y1="1400" x2="1040" y2="1510"/>
+  <polygon points="335,1507 345,1507 340,1517"/>
+  <polygon points="1035,1507 1045,1507 1040,1517"/>
+
+  <!-- ═══ DIAGRAM 2: DATA FLOW ═══ -->
+  <!-- Sources → Normalization -->
+  <line x1="230" y1="1980" x2="460" y2="2100"/>
+  <line x1="690" y1="1980" x2="690" y2="2100"/>
+  <line x1="1150" y1="1980" x2="920" y2="2100"/>
+  <polygon points="455,2097 465,2097 460,2107"/>
+  <!-- Normalization → 3 Engines -->
+  <line x1="500" y1="2230" x2="230" y2="2330"/>
+  <line x1="690" y1="2230" x2="690" y2="2330"/>
+  <line x1="880" y1="2230" x2="1150" y2="2330"/>
+  <polygon points="225,2327 235,2327 230,2337"/>
+  <polygon points="685,2327 695,2327 690,2337"/>
+  <polygon points="1145,2327 1155,2327 1150,2337"/>
+  <!-- 3 Engines → AI Controller -->
+  <line x1="230" y1="2510" x2="500" y2="2600"/>
+  <line x1="690" y1="2510" x2="690" y2="2600"/>
+  <line x1="1150" y1="2510" x2="880" y2="2600"/>
+  <polygon points="685,2597 695,2597 690,2607"/>
+  <!-- AI Controller → Outputs -->
+  <line x1="500" y1="2760" x2="340" y2="2860"/>
+  <line x1="880" y1="2760" x2="1040" y2="2860"/>
+  <polygon points="335,2857 345,2857 340,2867"/>
+  <polygon points="1035,2857 1045,2857 1040,2867"/>
+
+  <!-- ═══ DIAGRAM 3: BLOCKCHAIN ═══ -->
+  <!-- Block → Tx types fan -->
+  <line x1="460" y1="3520" x2="230" y2="3650"/>
+  <line x1="550" y1="3520" x2="460" y2="3650"/>
+  <line x1="690" y1="3520" x2="690" y2="3650"/>
+  <line x1="830" y1="3520" x2="920" y2="3650"/>
+  <line x1="920" y1="3520" x2="1150" y2="3650"/>
+
+  <!-- ═══ DIAGRAM 4: DEPLOYMENT ═══ -->
+  <line x1="690" y1="4140" x2="230" y2="4250"/>
+  <line x1="690" y1="4140" x2="530" y2="4250"/>
+  <line x1="690" y1="4140" x2="690" y2="4250"/>
+  <line x1="690" y1="4140" x2="850" y2="4250"/>
+  <line x1="690" y1="4140" x2="1150" y2="4250"/>
+</svg>
+
+<!-- ═══════════════════════════════════════
+     TITLE
+     ═══════════════════════════════════════ -->
+<div class="tb" style="top:24px">
+  <h1>🚢 FreightSetu Pro — System Architecture</h1>
+  <p>Unified Maritime Freight Intelligence Platform · AI + Blockchain + Carbon Optimizer</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DIAGRAM 1: SYSTEM TOPOLOGY
+     ═══════════════════════════════════════ -->
+<div class="lb" style="top:120px"></div>
+<div class="lt" style="top:120px;right:50px">Diagram 1 — System Topology</div>
+<div class="stitle" style="left:70px;top:140px">System Topology<div class="sub">External sources → Ingestion → Processing → Output</div></div>
+
+<!-- Row 1: Data Sources -->
+<div class="lb" style="top:185px"></div>
+<div class="lt" style="top:185px;left:50px">External Data Sources</div>
+
+<div class="nd" style="left:80px;top:210px;width:280px" onclick="op(1)">
+  <span class="nbg">SOURCE 1</span>
+  <div class="nh"><div class="ni ic-b">📡</div><div><div class="nn">AIS / Spire / MarineTraffic</div><div class="nf">Vessel tracking feeds</div></div></div>
+  <div class="ns">Real-time ship positions: MMSI, lat/lng, speed, heading, vessel type, destination. WebSocket + REST polling.</div>
+  <div class="nt"><span class="tg tg-py">WebSocket</span><span class="tg tg-py">REST</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<div class="nd" style="left:540px;top:210px;width:280px" onclick="op(2)">
+  <span class="nbg">SOURCE 2</span>
+  <div class="nh"><div class="ni ic-a">🌊</div><div><div class="nn">IMD / NOAA / ERA5 Weather</div><div class="nf">Meteorological feeds</div></div></div>
+  <div class="ns">Cyclone alerts, wind speed, wave height, sea surface temperature, monsoon forecasts for Bay of Bengal.</div>
+  <div class="nt"><span class="tg tg-py">IMD API</span><span class="tg tg-py">NOAA</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<div class="nd" style="left:1000px;top:210px;width:280px" onclick="op(3)">
+  <span class="nbg">SOURCE 3</span>
+  <div class="nh"><div class="ni ic-e">📊</div><div><div class="nn">FRED / BDI / Yahoo Finance</div><div class="nf">Market data feeds</div></div></div>
+  <div class="ns">Baltic Dry Index (daily), VLSFO bunker prices, coal/fertilizer commodity prices, USD/INR exchange rate.</div>
+  <div class="nt"><span class="tg tg-py">FRED API</span><span class="tg tg-py">Yahoo</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<!-- Row 2: Stream Ingestion -->
+<div class="wb" style="left:260px;top:420px;right:260px" onclick="op(4)">
+  <div class="nn" style="font-size:14px">🔄 Stream Ingestion Layer (AsyncIO)</div>
+  <div class="nf">core/stream_ingestion.py — WebSocket + REST polling pipeline</div>
+  <div class="ns" style="margin-top:4px">Real-time data pipeline. AsyncIO coroutines poll all 3 sources concurrently, normalize timestamps to UTC, enrich with vessel classification and route corridor mapping.</div>
+  <div class="nt" style="justify-content:center"><span class="tg tg-py">Python</span><span class="tg tg-py">AsyncIO</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<!-- Row 3: Data Store -->
+<div class="wb" style="left:260px;top:620px;right:260px" onclick="op(5)">
+  <div class="nn" style="font-size:14px">🗄️ Data Store (TimescaleDB + ChromaDB)</div>
+  <div class="nf">Time-series + Vector embeddings</div>
+  <div class="ns" style="margin-top:4px">TimescaleDB hypertables for BDI, freight rates, fuel prices, weather, AIS positions. ChromaDB vector store for RAG over maritime news embeddings.</div>
+  <div class="nt" style="justify-content:center"><span class="tg tg-dk">TimescaleDB</span><span class="tg tg-ai">ChromaDB</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<!-- Row 4: 3 Modules -->
+<div class="lb" style="top:800px"></div>
+<div class="lt" style="top:800px;left:50px">Processing Modules</div>
+
+<div class="nd" style="left:80px;top:850px;width:280px" onclick="op(6)">
+  <span class="nbg">MODULE 1</span>
+  <div class="nh"><div class="ni ic-c">📈</div><div><div class="nn">ECFI Engine</div><div class="nf">modules/ecfi_engine.py</div></div></div>
+  <div class="ns">East Coast Freight Index — India's first composite maritime freight index. 6 route sub-indices + VMD-Transformer-LSTM forecasting + SHAP explainability.</div>
+  <div class="nt"><span class="tg tg-py">Python</span><span class="tg tg-ai">ML</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<div class="nd" style="left:540px;top:850px;width:280px" onclick="op(7)">
+  <span class="nbg">MODULE 2</span>
+  <div class="nh"><div class="ni ic-p">🧠</div><div><div class="nn">SagarMind LLM Agent</div><div class="nf">modules/sagar_mind.py</div></div></div>
+  <div class="ns">Conversational AI procurement assistant. LangChain ReAct agent with tool-calling (forecast, cyclone, cost, search). RAG over maritime news via ChromaDB.</div>
+  <div class="nt"><span class="tg tg-ai">LangChain</span><span class="tg tg-ai">GPT-4</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<div class="nd" style="left:1000px;top:850px;width:280px" onclick="op(8)">
+  <span class="nbg">MODULE 3</span>
+  <div class="nh"><div class="ni ic-rl">🎯</div><div><div class="nn">CharterRL Optimizer</div><div class="nf">modules/charter_rl.py</div></div></div>
+  <div class="ns">Reinforcement Learning agent (PPO). Learns optimal chartering timing. Actions: Book Full, Book 50%, Wait 1W, Wait 2W, Hedge.</div>
+  <div class="nt"><span class="tg tg-rl">PPO</span><span class="tg tg-py">Stable-Baselines3</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<!-- Row 5: AI Controller -->
+<div class="wb" style="left:200px;top:1180px;right:200px" onclick="op(9)">
+  <div class="nn" style="font-size:14px">🤖 AI Controller (Orchestrator)</div>
+  <div class="nf">core/ai_controller.py — LangChain agent + tool router</div>
+  <div class="ns" style="margin-top:6px">
+    Merges outputs from all 3 modules + <strong>Module 4: GreenFreight</strong> (carbon optimizer, Pareto cost×carbon) + <strong>Module 5: Procurement Copilot</strong> (unified intelligence report).
+  </div>
+  <div class="nt" style="justify-content:center"><span class="tg tg-ai">LangChain</span><span class="tg tg-py">Python</span><span class="tg tg-rl">M4: Green</span><span class="tg tg-ui">M5: Copilot</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<!-- Row 6: Outputs -->
+<div class="lb" style="top:1460px"></div>
+<div class="lt" style="top:1460px;left:50px">Output Layer</div>
+
+<div class="nd" style="left:130px;top:1510px;width:300px" onclick="op(10)">
+  <span class="nbg">OUTPUT</span>
+  <div class="nh"><div class="ni ic-o">⛓️</div><div><div class="nn">Blockchain Ledger</div><div class="nf">core/blockchain_service.py</div></div></div>
+  <div class="ns">Immutable audit trail. Hashes every forecast, charter decision, data ingestion, ECFI publication, and CII compliance event with timestamps.</div>
+  <div class="nt"><span class="tg tg-bc">SHA-256</span><span class="tg tg-py">Python</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<div class="nd" style="left:830px;top:1510px;width:300px" onclick="op(11)">
+  <span class="nbg">OUTPUT</span>
+  <div class="nh"><div class="ni ic-b">🖥️</div><div><div class="nn">Streamlit Dashboard</div><div class="nf">app.py + deck.gl maps</div></div></div>
+  <div class="ns">Minimalist dark UI. Interactive charts (ECFI, forecasts), deck.gl 3D vessel maps, SagarMind chat panel, carbon optimizer, real-time alerts.</div>
+  <div class="nt"><span class="tg tg-ui">Streamlit</span><span class="tg tg-ui">deck.gl</span></div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DIAGRAM 2: DATA FLOW SCHEMA
+     ═══════════════════════════════════════ -->
+<div class="lb" style="top:1750px"></div>
+<div class="lt" style="top:1750px;right:50px">Diagram 2 — Data Flow Schema</div>
+<div class="stitle" style="left:70px;top:1770px">Data Flow Schema<div class="sub">How raw data transforms into intelligence</div></div>
+
+<div class="lb" style="top:1830px"></div>
+<div class="lt" style="top:1830px;left:50px">Raw Feeds</div>
+
+<div class="nd" style="left:80px;top:1860px;width:260px" onclick="op(12)">
+  <div class="nh"><div class="ni ic-b">📡</div><div><div class="nn">AIS Feed</div></div></div>
+  <div class="ns">MMSI, lat/lng, speed, heading, vessel type, destination port.</div>
+</div>
+
+<div class="nd" style="left:540px;top:1860px;width:260px" onclick="op(13)">
+  <div class="nh"><div class="ni ic-e">📊</div><div><div class="nn">Market Data</div></div></div>
+  <div class="ns">BDI daily, VLSFO price, coal/fertilizer prices, USD/INR FX.</div>
+</div>
+
+<div class="nd" style="left:1000px;top:1860px;width:260px" onclick="op(14)">
+  <div class="nh"><div class="ni ic-a">🌊</div><div><div class="nn">Weather / Geo</div></div></div>
+  <div class="ns">IMD cyclone alerts, NOAA wind, wave height, SST anomaly.</div>
+</div>
+
+<!-- Normalization -->
+<div class="wb" style="left:260px;top:2100px;right:260px" onclick="op(15)">
+  <div class="nn" style="font-size:14px">🔧 Normalization & Enrichment</div>
+  <div class="ns" style="margin-top:4px">Timestamp alignment (UTC) → Vessel type classification → Route corridor mapping → Feature engineering (lags, rolling averages, momentum indicators)</div>
+</div>
+
+<!-- 3 Engines -->
+<div class="nd" style="left:80px;top:2330px;width:260px" onclick="op(6)">
+  <div class="nh"><div class="ni ic-c">📈</div><div><div class="nn">ECFI Engine</div></div></div>
+  <div class="ns">→ ECFI Index (6 sub-indices) — India's freight price thermometer.</div>
+</div>
+
+<div class="nd" style="left:540px;top:2330px;width:260px" onclick="op(16)">
+  <div class="nh"><div class="ni ic-a">🔮</div><div><div class="nn">Forecaster</div></div></div>
+  <div class="ns">→ Rate Prediction (30/60/90 day) with confidence intervals.</div>
+</div>
+
+<div class="nd" style="left:1000px;top:2330px;width:260px" onclick="op(8)">
+  <div class="nh"><div class="ni ic-rl">🎯</div><div><div class="nn">RL Environment</div></div></div>
+  <div class="ns">→ Charter Strategy (Book Full / Book 50% / Wait / Hedge).</div>
+</div>
+
+<!-- AI Controller -->
+<div class="wb" style="left:300px;top:2600px;right:300px" onclick="op(9)">
+  <div class="nn" style="font-size:14px">🤖 AI Controller</div>
+  <div class="ns" style="margin-top:4px">Merges all outputs + Carbon layer + LLM reasoning → Procurement Intelligence Report</div>
+</div>
+
+<!-- Outputs -->
+<div class="nd" style="left:130px;top:2860px;width:280px" onclick="op(10)">
+  <div class="nh"><div class="ni ic-o">⛓️</div><div><div class="nn">Blockchain</div></div></div>
+  <div class="ns">Hash event → Timestamp → Verify chain integrity.</div>
+</div>
+
+<div class="nd" style="left:830px;top:2860px;width:280px" onclick="op(11)">
+  <div class="nh"><div class="ni ic-b">🖥️</div><div><div class="nn">Dashboard</div></div></div>
+  <div class="ns">Charts → Maps → Chat → Real-time alerts.</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DIAGRAM 3: BLOCKCHAIN
+     ═══════════════════════════════════════ -->
+<div class="lb" style="top:3100px"></div>
+<div class="lt" style="top:3100px;right:50px">Diagram 3 — Blockchain Architecture</div>
+<div class="stitle" style="left:70px;top:3120px">Blockchain Audit Trail<div class="sub">Immutable ledger for every AI decision and data event</div></div>
+
+<!-- Block Structure -->
+<div class="wb" style="left:260px;top:3200px;right:260px;text-align:left" onclick="op(17)">
+  <div class="nn" style="font-size:14px;text-align:center">⛓️ Block #N Structure</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--emerald);background:rgba(0,212,170,.05);border:1px solid rgba(0,212,170,.1);border-radius:8px;padding:10px 14px;margin-top:10px;white-space:pre-wrap;line-height:1.5">timestamp:    2026-08-28T01:00:00Z
+prev_hash:    "a3f8b2c1..."
+transactions: [ {type, route, rate, confidence} ]
+nonce:        42819
+hash:         "7f2e9a1b..."</div>
+  <div class="nc" style="text-align:center">▸ Click for full block schema + transaction types</div>
+</div>
+
+<!-- 5 Transaction Types -->
+<div class="lb" style="top:3600px"></div>
+<div class="lt" style="top:3600px;left:50px">Transaction Types</div>
+
+<div class="nd" style="left:60px;top:3650px;width:220px" onclick="op(18)">
+  <div class="nh"><div class="ni ic-c">📈</div><div><div class="nn">FORECAST</div></div></div>
+  <div class="ns">Every rate prediction + model version. Audit trail for predictions.</div>
+</div>
+
+<div class="nd" style="left:310px;top:3650px;width:220px" onclick="op(19)">
+  <div class="nh"><div class="ni ic-a">🎯</div><div><div class="nn">CHARTER_DECISION</div></div></div>
+  <div class="ns">Book/Wait/Hedge action + reasoning hash. Accountability trail.</div>
+</div>
+
+<div class="nd" style="left:560px;top:3650px;width:220px" onclick="op(20)">
+  <div class="nh"><div class="ni ic-b">📥</div><div><div class="nn">DATA_INGESTION</div></div></div>
+  <div class="ns">Hash of ingested dataset. Data integrity proof.</div>
+</div>
+
+<div class="nd" style="left:810px;top:3650px;width:220px" onclick="op(21)">
+  <div class="nh"><div class="ni ic-p">📊</div><div><div class="nn">ECFI_PUBLISH</div></div></div>
+  <div class="ns">Daily ECFI value + sub-indices. Index transparency.</div>
+</div>
+
+<div class="nd" style="left:1060px;top:3650px;width:220px" onclick="op(22)">
+  <div class="nh"><div class="ni ic-e">♻️</div><div><div class="nn">COMPLIANCE</div></div></div>
+  <div class="ns">CII rating + emissions estimate. ESG compliance proof.</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DIAGRAM 4: DEPLOYMENT
+     ═══════════════════════════════════════ -->
+<div class="lb" style="top:3950px"></div>
+<div class="lt" style="top:3950px;right:50px">Diagram 4 — Deployment Architecture</div>
+<div class="stitle" style="left:70px;top:3970px">Docker Compose Stack<div class="sub">5 containers orchestrated together</div></div>
+
+<div class="wb" style="left:350px;top:4040px;right:350px" onclick="op(23)">
+  <div class="nn" style="font-size:14px">🐳 docker-compose.yml</div>
+  <div class="ns" style="margin-top:4px">Multi-service orchestration. 5 containers running in parallel.</div>
+  <div class="nc">▸ Click for details</div>
+</div>
+
+<div class="nd" style="left:60px;top:4250px;width:200px" onclick="op(24)">
+  <div class="nh"><div class="ni ic-b">🖥️</div><div><div class="nn">freightsetu-app</div><div class="nf">Streamlit :8501</div></div></div>
+  <div class="ns">Dashboard UI.</div>
+</div>
+
+<div class="nd" style="left:300px;top:4250px;width:200px" onclick="op(25)">
+  <div class="nh"><div class="ni ic-c">⚡</div><div><div class="nn">freightsetu-api</div><div class="nf">FastAPI :8000</div></div></div>
+  <div class="ns">REST API server.</div>
+</div>
+
+<div class="nd" style="left:540px;top:4250px;width:200px" onclick="op(26)">
+  <div class="nh"><div class="ni ic-r">⚡</div><div><div class="nn">Redis</div><div class="nf">Task queue :6379</div></div></div>
+  <div class="ns">Caching + queue.</div>
+</div>
+
+<div class="nd" style="left:780px;top:4250px;width:200px" onclick="op(27)">
+  <div class="nh"><div class="ni ic-a">🗄️</div><div><div class="nn">TimescaleDB</div><div class="nf">PostgreSQL :5432</div></div></div>
+  <div class="ns">Time-series store.</div>
+</div>
+
+<div class="nd" style="left:1020px;top:4250px;width:200px" onclick="op(28)">
+  <div class="nh"><div class="ni ic-p">🧠</div><div><div class="nn">ChromaDB</div><div class="nf">Vector store :8100</div></div></div>
+  <div class="ns">RAG embeddings.</div>
+</div>
+
+<!-- FOOTER -->
+<div class="ft" style="top:4530px">
+  <span>🚢 FreightSetu Pro</span> · Interactive Architecture Flowchart · SIH26006 · Architecture v1.0
+</div>
+
+</div><!-- /canvas -->
+
+<script>
+const D={
+1:{b:"SOURCE 1",t:"AIS / Spire / MarineTraffic",f:"Vessel Tracking Feeds",s:[
+  {l:"📡 Data Provided",t:"Real-time vessel positions from global AIS network:<br>• <strong>MMSI</strong> — unique ship ID (9 digits)<br>• <strong>Latitude/Longitude</strong> — GPS position<br>• <strong>Speed over ground</strong> — in knots<br>• <strong>Heading</strong> — compass direction<br>• <strong>Vessel type</strong> — bulk carrier, tanker, etc.<br>• <strong>Destination</strong> — declared next port<br>• <strong>Draught</strong> — how deep the hull sits"},
+  {l:"⚙️ Ingestion Method",fm:"WebSocket stream: ws://ais.spire.com/v2/\n  → Async listener in stream_ingestion.py\n  → Parse NMEA sentences\n  → Classify vessel type (Capesize/Panamax/etc.)\n  → Geofence against 6 East Coast ports\n  → Store to TimescaleDB hypertable"},
+  {l:"🔀 Routes To",r:["AIS Feed","Normalization","ECFI Engine (vessel density)","Dashboard (deck.gl map)"]}
+]},
+2:{b:"SOURCE 2",t:"IMD / NOAA / ERA5 Weather",f:"Meteorological Intelligence Feeds",s:[
+  {l:"🌊 Data Provided",t:"• <strong>IMD</strong> — India Meteorological Dept cyclone warnings for Bay of Bengal<br>• <strong>NOAA GFS</strong> — Global wind speed at 10m, significant wave height (Hs)<br>• <strong>Copernicus ERA5</strong> — Sea surface temperature (SST) anomalies, reanalysis data<br>• <strong>Seasonal patterns</strong> — Monsoon (Jun–Sep), cyclone season (Oct–Dec)"},
+  {l:"⚙️ Ingestion",fm:"REST polling every 6 hours:\n  IMD cyclone API → active storms in BoB\n  NOAA GFS gridded data → wind/wave at route corridor\n  ERA5 reanalysis → SST anomaly detection\n  → Composite risk score per route corridor"},
+  {l:"🔀 Routes To",r:["Weather Feed","Normalization","ECFI Engine (weather weighting)","SagarMind (cyclone tool)"]}
+]},
+3:{b:"SOURCE 3",t:"FRED / BDI / Yahoo Finance",f:"Market & Commodity Data Feeds",s:[
+  {l:"📊 Data Provided",t:"• <strong>Baltic Dry Index (BDI)</strong> — Global shipping price index, published daily by Baltic Exchange<br>• <strong>VLSFO bunker price</strong> — Very Low Sulphur Fuel Oil (~$808/MT)<br>• <strong>Commodity prices</strong> — Coking coal, thermal coal, iron ore, DAP, urea<br>• <strong>USD/INR</strong> — Exchange rate from RBI<br>• <strong>Brent Crude</strong> — Oil benchmark from FRED (US Federal Reserve)"},
+  {l:"⚙️ Ingestion",fm:"REST polling daily:\n  FRED API → BDI, Brent crude (free, delayed 1d)\n  Yahoo Finance → coal/fertilizer commodity prices\n  RBI API → USD/INR official rate\n  Ship & Bunker → VLSFO at Singapore/Fujairah\n  → Normalize to USD, align timestamps (UTC)"},
+  {l:"🔀 Routes To",r:["Market Data","Normalization","ECFI Engine","Forecaster","CharterRL state space"]}
+]},
+4:{b:"CORE",t:"Stream Ingestion Layer",f:"core/stream_ingestion.py",s:[
+  {l:"⚙️ Architecture",t:"Python <code>asyncio</code> event loop running 3 concurrent coroutines — one per data source. Each coroutine handles connection, polling, error recovery, and backpressure."},
+  {l:"📋 Processing Pipeline",fm:"1. Connect: WebSocket (AIS) + REST (Market, Weather)\n2. Receive raw payload (JSON/CSV)\n3. Parse and validate schema\n4. Timestamp alignment → UTC\n5. Vessel type classification (DWT → class)\n6. Route corridor mapping (origin→dest → corridor ID)\n7. Feature engineering:\n   - Lag features (1, 3, 7, 14, 30, 60, 90 days)\n   - Rolling averages (7d, 14d, 30d)\n   - Rate-of-change / momentum\n   - Bollinger bands\n8. Write to TimescaleDB hypertable\n9. Embed news text → ChromaDB vectors"},
+  {l:"🔀 Routes To",r:["Raw feeds","Normalization","TimescaleDB + ChromaDB"]}
+]},
+5:{b:"STORE",t:"Data Store (TimescaleDB + ChromaDB)",f:"Time-series + Vector embeddings",s:[
+  {l:"🗄️ TimescaleDB",t:"PostgreSQL extension for time-series. Hypertables auto-partition by time. Stores: BDI daily, freight rates by route, VLSFO/HFO fuel prices, AIS vessel positions, weather readings. Continuous aggregates for hourly/daily rollups."},
+  {l:"🧠 ChromaDB",t:"Vector database for RAG (Retrieval-Augmented Generation). Stores embeddings of scraped maritime news articles (Lloyd's List, TradeWinds, Splash247). SagarMind queries these embeddings to provide evidence-backed recommendations."},
+  {l:"🔀 Routes To",r:["Data Store","ECFI Engine","Forecaster","CharterRL","SagarMind (RAG)"]}
+]},
+6:{b:"MODULE 1",t:"ECFI Engine — East Coast Freight Index",f:"modules/ecfi_engine.py",s:[
+  {l:"📈 Purpose",t:"Compute India's <strong>first East Coast Freight Index</strong> — a single number summarizing the health of maritime freight to India's East Coast, like the Sensex for shipping."},
+  {l:"⚙️ Algorithm",fm:"6 route sub-indices (weighted by trade volume):\n  C5TC (Capesize TC avg)         — 30%\n  P3A (Panamax Atlantic)          — 20%\n  S6TC (Supramax TC avg)         — 15%\n  Aus→India Coal Route            — 15%\n  Indonesia→India Coal Route      — 12%\n  Middle East→India Route         — 8%\n\nForecasting: VMD decomposition →\n  Transformer-LSTM hybrid model\n  30/60/90-day forward prediction\n  + SHAP feature importance per prediction"},
+  {l:"📤 Output",t:"<strong>ECFI daily value</strong> + 6 sub-index breakdowns + 30/60/90-day forecast with confidence bands + SHAP explainability chart."}
+]},
+7:{b:"MODULE 2",t:"SagarMind — LLM Procurement Agent",f:"modules/sagar_mind.py",s:[
+  {l:"🧠 Purpose",t:"Conversational AI assistant for procurement teams. Ask natural language questions like <em>\"Should I book a Capesize to Paradip next week?\"</em> and get data-backed answers."},
+  {l:"⚙️ Architecture",fm:"LangChain ReAct Agent:\n  LLM: GPT-4-turbo (reasoning engine)\n  Tools available to the agent:\n    → forecast_rate(route, days)\n    → check_cyclone(region)\n    → calculate_cost(params)\n    → search_news(query) ← RAG via ChromaDB\n\n  Agent loop:\n    Thought → Action → Observation → Repeat"},
+  {l:"📤 Output",t:"Natural language recommendation + supporting data tables + confidence score + sources cited from maritime news."}
+]},
+8:{b:"MODULE 3",t:"CharterRL — RL Chartering Optimizer",f:"modules/charter_rl.py",s:[
+  {l:"🎯 Purpose",t:"Reinforcement Learning agent that <strong>learns the optimal timing</strong> for booking ships — like a stock trader learning when to buy/sell."},
+  {l:"⚙️ Algorithm",fm:"Algorithm: PPO (Proximal Policy Optimization)\nLibrary: Stable-Baselines3\n\nState Space (what the agent sees):\n  BDI value, VLSFO fuel price,\n  commodity price, days-to-deadline,\n  cyclone probability, vessel density\n\nAction Space (what it can do):\n  0: Book Full charter\n  1: Book 50% (hedge)\n  2: Wait 1 week\n  3: Wait 2 weeks\n  4: Hedge with futures\n\nReward: -cost_saved vs benchmark (buy-first-day)"},
+  {l:"📤 Output",t:"Chartering strategy recommendation + simulated savings vs simple benchmark + confidence bars."}
+]},
+9:{b:"CORE",t:"AI Controller — Orchestrator",f:"core/ai_controller.py",s:[
+  {l:"🤖 Purpose",t:"The central brain that merges outputs from all 5 modules into a single, coherent recommendation."},
+  {l:"⚙️ Modules Integrated",fm:"Module 1: ECFI Engine → current index + forecast\nModule 2: SagarMind  → LLM reasoning + news context\nModule 3: CharterRL  → optimal timing strategy\nModule 4: GreenFreight → carbon-cost Pareto frontier\n  Cheapest / Greenest / Best Balance vessel\nModule 5: Procurement Copilot → unified report\n  Aggregates all above into single decision"},
+  {l:"📋 API Endpoints",tbl:[
+    ["/api/ecfi/current","GET","Current ECFI + sub-indices"],
+    ["/api/ecfi/forecast","GET","30/60/90d ECFI forecast"],
+    ["/api/forecast/{route}","GET","Route-specific rate prediction"],
+    ["/api/charter/recommend","POST","RL chartering recommendation"],
+    ["/api/green/optimize","POST","Carbon-cost Pareto optimization"],
+    ["/api/chat","POST","SagarMind conversational endpoint"],
+    ["/api/blockchain/verify/{id}","GET","Verify block integrity"],
+    ["/api/vessels/track","GET","Live AIS vessel positions"],
+    ["/api/weather/cyclone","GET","Bay of Bengal cyclone alerts"]
+  ]}
+]},
+10:{b:"OUTPUT",t:"Blockchain Ledger",f:"core/blockchain_service.py",s:[
+  {l:"⛓️ Purpose",t:"Immutable audit trail. Every AI prediction, chartering decision, and data ingestion event is hashed and chained — creating an <strong>unalterable record</strong> that proves what was predicted, when, and on what data."},
+  {l:"⚙️ How It Works",fm:"1. Event occurs (forecast, charter, ingest)\n2. Create transaction object with:\n   - type, route, predicted_rate, confidence\n   - model_version, data_hash, timestamp\n3. Bundle transactions into Block #N\n4. Compute SHA-256 hash of block contents\n5. Link to previous block's hash (chain)\n6. Store block with nonce (proof-of-work lite)"},
+  {l:"🔐 Why It Matters",t:"Solves the <strong>Accountability Void</strong> — if a prediction was wrong, you can trace exactly what model version, what data, and what reasoning led to that decision. No one can alter the record after the fact."}
+]},
+11:{b:"OUTPUT",t:"Streamlit Dashboard",f:"app.py + static/style.css",s:[
+  {l:"🖥️ UI Components",fm:"• ECFI gauge — current index value + trend arrow\n• Forecast chart — 30/60/90d lines + CI bands\n• deck.gl 3D map — vessel positions + route arcs\n• SagarMind chat — conversational AI panel\n• Carbon optimizer — Pareto chart (cost vs CO₂)\n• Blockchain explorer — recent blocks + verify\n• Alert banner — cyclone/rate threshold warnings"},
+  {l:"🎨 Theme",t:"Minimalist dark theme (<code>static/style.css</code>). Streamlit custom theming with dark backgrounds, neon accents, monospace data displays."}
+]},
+12:{b:"FEED",t:"AIS Feed Details",f:"stream_ingestion.py → AIS coroutine",s:[{l:"📡 Fields",fm:"MMSI: 9-digit unique ID\nlat/lng: GPS coordinates\nspeed: knots (SOG)\nheading: degrees (0-360)\nvessel_type: bulk/tanker/container\ndestination: next port name\ndraught: meters below waterline"}]},
+13:{b:"FEED",t:"Market Data Details",f:"stream_ingestion.py → Market coroutine",s:[{l:"📊 Fields",fm:"BDI: Baltic Dry Index (daily)\nVLSFO: $/MT fuel price\nCoal: FOB $/MT (coking, thermal)\nFertilizer: DAP, Urea $/MT\nUSD/INR: exchange rate\nBrent: $/barrel crude oil"}]},
+14:{b:"FEED",t:"Weather / Geo Details",f:"stream_ingestion.py → Weather coroutine",s:[{l:"🌊 Fields",fm:"Cyclone: name, category, lat/lng, radius\nWind: m/s at 10m elevation\nWave Hs: significant wave height (meters)\nSST: sea surface temperature anomaly\nMonsoon: active/inactive flag"}]},
+15:{b:"PROCESS",t:"Normalization & Enrichment",f:"stream_ingestion.py → normalize()",s:[{l:"⚙️ Steps",fm:"1. Timestamp alignment → all feeds to UTC\n2. Vessel type classification:\n   DWT < 40K → Handysize\n   40-60K → Supramax\n   60-80K → Panamax\n   80-200K → Capesize\n3. Route corridor mapping:\n   origin+dest → corridor ID (e.g., AUS_IND_EAST)\n4. Feature engineering:\n   Lags: 1, 3, 7, 14, 30, 60, 90 days\n   Rolling: mean, std (7d, 14d, 30d)\n   Momentum: RSI, MACD\n   Volatility: Bollinger bands"}]},
+16:{b:"ENGINE",t:"Forecaster — Transformer-LSTM Hybrid",f:"models/forecaster.py",s:[
+  {l:"🔮 Architecture",fm:"Step 1: VMD (Variational Mode Decomposition)\n  → Decompose BDI/rate series into\n    trend + seasonal + residual modes\n\nStep 2: Transformer encoder\n  → Self-attention over 90-day lookback\n  → Captures long-range dependencies\n\nStep 3: LSTM decoder\n  → Sequential generation of 30/60/90-day\n    point forecasts\n\nStep 4: Quantile regression head\n  → 10th, 50th, 90th percentile outputs\n  → Generates confidence intervals"},
+  {l:"📤 Output",t:"Point forecast + 80%/95% confidence bands for each horizon. MAPE target: <8% at 30d, <12% at 60d, <15% at 90d."}
+]},
+17:{b:"BLOCKCHAIN",t:"Block Structure Schema",f:"core/blockchain_service.py",s:[{l:"📋 Block Fields",fm:"{\n  block_id:     int (sequential)\n  timestamp:    ISO 8601 UTC\n  prev_hash:    SHA-256 of block N-1\n  transactions: [\n    {\n      type:            \"FORECAST\"\n      route:           \"Indonesia→Paradip\"\n      predicted_rate:  14.2\n      confidence:      0.78\n      model_version:   \"v1.2\"\n      data_hash:       \"e7d9f1...\"\n    }\n  ]\n  nonce:        int (proof-of-work)\n  hash:         SHA-256 of this block\n}"}]},
+18:{b:"TX TYPE",t:"FORECAST Transaction",f:"blockchain_service.py",s:[{l:"📈 Records",t:"Every rate prediction: route, predicted rate, confidence score, model version, hash of input data. Creates an <strong>audit trail</strong> so predictions can be verified retroactively."}]},
+19:{b:"TX TYPE",t:"CHARTER_DECISION Transaction",f:"blockchain_service.py",s:[{l:"🎯 Records",t:"Every Book/Wait/Hedge action: the action taken, reasoning hash, user identity, timestamp. Provides <strong>accountability</strong> — who made what decision and why."}]},
+20:{b:"TX TYPE",t:"DATA_INGESTION Transaction",f:"blockchain_service.py",s:[{l:"📥 Records",t:"SHA-256 hash of every ingested dataset. Proves <strong>data integrity</strong> — the input data hasn't been tampered with after ingestion."}]},
+21:{b:"TX TYPE",t:"ECFI_PUBLISH Transaction",f:"blockchain_service.py",s:[{l:"📊 Records",t:"Daily ECFI value + all 6 sub-indices. Ensures <strong>index transparency</strong> — the published number matches the calculation."}]},
+22:{b:"TX TYPE",t:"COMPLIANCE Transaction",f:"blockchain_service.py",s:[{l:"♻️ Records",t:"CII rating used for vessel selection + emissions estimate. Provides <strong>ESG compliance proof</strong> for carbon regulations."}]},
+23:{b:"DEPLOY",t:"Docker Compose Stack",f:"docker-compose.yml",s:[{l:"🐳 5 Services",fm:"freightsetu-app:  Streamlit UI        → :8501\nfreightsetu-api:  FastAPI REST server → :8000\nredis:            Task queue + cache  → :6379\ntimescaledb:      PostgreSQL + TS ext → :5432\nchromadb:         Vector store (RAG)  → :8100\n\nAll services on shared Docker network.\nVolumes for persistent DB storage.\nHealth checks + restart policies."}]},
+24:{b:"SERVICE",t:"freightsetu-app",f:"Streamlit on :8501",s:[{l:"🖥️ Details",t:"Main dashboard entry point. Runs <code>app.py</code> with Streamlit server. Custom dark theme from <code>static/style.css</code>. Connects to API at <code>http://freightsetu-api:8000</code>."}]},
+25:{b:"SERVICE",t:"freightsetu-api",f:"FastAPI on :8000",s:[{l:"⚡ Details",t:"REST API server. Runs <code>api.py</code> with Uvicorn. 10 endpoints covering ECFI, forecasts, chartering, carbon optimization, chat, blockchain verification, vessel tracking, and weather. Auto-generated OpenAPI docs at <code>/docs</code>."}]},
+26:{b:"SERVICE",t:"Redis",f:"Task Queue on :6379",s:[{l:"⚡ Details",t:"In-memory cache for frequently accessed data (current BDI, latest ECFI). Also serves as task queue for background ingestion jobs and rate-limited API calls."}]},
+27:{b:"SERVICE",t:"TimescaleDB",f:"PostgreSQL :5432",s:[{l:"🗄️ Details",t:"PostgreSQL with TimescaleDB extension. Hypertables auto-partition time-series data by week. Continuous aggregates pre-compute hourly/daily rollups for fast dashboard queries. Stores: BDI, freight rates, fuel prices, AIS positions, weather."}]},
+28:{b:"SERVICE",t:"ChromaDB",f:"Vector Store :8100",s:[{l:"🧠 Details",t:"Stores sentence-transformer embeddings of maritime news articles (Lloyd's List, TradeWinds, Splash247). SagarMind's <code>search_news</code> tool queries these vectors for RAG — finding relevant news to support its recommendations."}]}
+};
+
+function op(id){
+  const d=D[id];if(!d)return;
+  document.getElementById('pb').textContent=d.b;
+  document.getElementById('ptt').textContent=d.t;
+  document.getElementById('pff').textContent=d.f;
+  let h='';
+  d.s.forEach(s=>{
+    h+='<div class="ps">';
+    h+=`<div class="pl">${s.l}</div>`;
+    if(s.t) h+=`<div class="pt">${s.t}</div>`;
+    if(s.fm) h+=`<div class="pf">${s.fm}</div>`;
+    if(s.r){h+='<div class="pr">';s.r.forEach((r,i)=>{if(i)h+='<span class="ar">→</span>';h+=`<span>${r}</span>`;});h+='</div>';}
+    if(s.tbl){
+      h+='<table class="api-tbl"><thead><tr><th>Endpoint</th><th>Method</th><th>Description</th></tr></thead><tbody>';
+      s.tbl.forEach(r=>{h+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;});
+      h+='</tbody></table>';
+    }
+    h+='</div>';
+  });
+  document.getElementById('pby').innerHTML=h;
+  document.getElementById('ov').classList.add('sh');
+  document.getElementById('pn').classList.add('sh');
+  document.querySelectorAll('.nd,.wb').forEach(n=>n.classList.remove('sel'));
+  if(event&&event.currentTarget)event.currentTarget.classList.add('sel');
+}
+
+function cp(){
+  document.getElementById('ov').classList.remove('sh');
+  document.getElementById('pn').classList.remove('sh');
+  document.querySelectorAll('.nd,.wb').forEach(n=>n.classList.remove('sel'));
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cp();});
+</script>
+
+</body>
+</html>
